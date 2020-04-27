@@ -11,7 +11,6 @@
 static struct boot_params params;
 
 void pr_guest_param(struct guest_params *guest_params);
-void strcpy(char *dst, const char *src);
 
 /*
 From x86 linux boot protocol
@@ -136,8 +135,4 @@ void pr_guest_param(struct guest_params *guest_params) {
     for (i = 0; i < guest_params->e820_entries; i++) 
         pr_info("\t\t%lx %lx %x\n", guest_params->e820_table[i].addr, 
             guest_params->e820_table[i].size, guest_params->e820_table[i].type);
-}
-
-void strcpy(char *dst, const char *src) {
-    while (*src) { *dst++ = *src++; }
 }
