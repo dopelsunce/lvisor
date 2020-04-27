@@ -57,18 +57,17 @@ void load_linux(struct guest_params *guest_params) {
     void *image;
     uint64_t kernel_start;
     uint16_t heap_end;
+    // The entry function for the kernel. %rsi holds the address of the boot_params.
     void (*entry)(uint64_t, struct boot_params *);
 
     image = __va(guest_params->kernel_start);
     hdr = &params.hdr;
 
-    memset(&params, 0, sizeof(struct boot_params));
-
     if (*(uint32_t *)(image + MAGIC_SIGNATURE_OFFSET) != MAGIC_SIGNATURE) {
         pr_info("Kernel too old.\n");
         return;
     }
-    
+
     header_image = (struct setup_header *)(image + SETUP_HDR_OFFSET);
 
     memcpy(hdr, header_image, 0x0202 + *(uint8_t *)(image + 0x0201));
@@ -90,7 +89,7 @@ void load_linux(struct guest_params *guest_params) {
         return;
     }
 
-    heap_end = 0xe000; 
+    heap_end = 0xe000;
 
     hdr->heap_end_ptr = heap_end - 0x200;
     hdr->loadflags |= 0x80; /* CAN_USE_HEAP */
@@ -132,7 +131,7 @@ void pr_guest_param(struct guest_params *guest_params) {
     pr_info("\tcmd_line %s\n", guest_params->cmdline);
     pr_info("\te820_entries %d\n", guest_params->e820_entries);
     pr_info("\te820_table\n");
-    for (i = 0; i < guest_params->e820_entries; i++) 
-        pr_info("\t\t%lx %lx %x\n", guest_params->e820_table[i].addr, 
+    for (i = 0; i < guest_params->e820_entries; i++)
+        pr_info("\t\t%lx %lx %x\n", guest_params->e820_table[i].addr,
             guest_params->e820_table[i].size, guest_params->e820_table[i].type);
 }
